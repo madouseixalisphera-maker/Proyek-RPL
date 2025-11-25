@@ -14,5 +14,21 @@
   {
     "title": "PDF Intelligence",
     "description": "Upload dokumen PDF tebal dan tanyakan apa saja. AI kami akan merangkum dan menjawab pertanyaan Anda."
+  },
+  {
+    "title": "Layanan Baru Dari FastAPI",
+    "description": "Ini percobaan nambah data lewat backend Python."
+  },
+  {
+    "title": "Layanan Baru Dari FastAPI",
+    "description": "Ini percobaan nambah data lewat backend Python."
+  },
+  {
+    "title": "Layanan Baru Dari FastAPI",
+    "description": "Ini percobaan nambah data lewat backend Python."
+  },
+  {
+    "title": "Layanan Percobaan",
+    "description": "Ini data yang dikirim dari Backend Python!"
   }
 ]
