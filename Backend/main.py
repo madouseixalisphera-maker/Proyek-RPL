@@ -4,25 +4,26 @@ from pydantic import BaseModel
 from typing import List, Optional
 import json
 import os
+from datetime import datetime
 
 app = FastAPI()
 
-# --- 1. SETUP CORS (Supaya Frontend HTML bisa akses Backend ini) ---
+# --- 1. SETUP CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Di production nanti ganti dengan domain kamu
+    allow_origins=["*"],  # Buat development. Production nanti diganti domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- 2. LOKASI DATABASE JSON ---
-# Kita mundur satu folder (..) karena folder data ada di luar folder backend
-DB_SERVICES = "../data/services.json"
-DB_TESTIMONIALS = "../data/testimonials.json"
+# --- 2. PATH DATABASE JSON (Teknik Absolute Path - Keren!) ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_SERVICES = os.path.join(BASE_DIR, "../data/services.json")
+DB_TESTIMONIALS = os.path.join(BASE_DIR, "../data/testimonials.json")
+DB_MESSAGES = os.path.join(BASE_DIR, "../data/messages.json") # <-- Tambahan
 
-# --- 3. MODEL DATA (Pydantic) ---
-# Ini validasi data: Judul & Deskripsi wajib berupa teks
+# --- 3. MODEL DATA ---
 class Service(BaseModel):
     title: str
     description: str
@@ -32,7 +33,15 @@ class Testimonial(BaseModel):
     role: str
     quote: str
 
-# --- 4. FUNGSI BANTUAN BACA/TULIS JSON ---
+class Message(BaseModel):
+    name: str
+    email: str
+    text: str
+    # Field di bawah ini opsional (diisi otomatis oleh server)
+    is_read: Optional[bool] = False 
+    timestamp: Optional[str] = None
+
+# --- 4. UTIL: BACA & TULIS JSON ---
 def load_data(filepath):
     if not os.path.exists(filepath):
         return []
@@ -41,40 +50,37 @@ def load_data(filepath):
 
 def save_data(filepath, data):
     with open(filepath, "w") as f:
-        # indent=2 biar file JSON-nya rapi (gak satu baris panjang)
         json.dump(data, f, indent=2)
 
-# --- 5. ENDPOINT API (SERVICES) ---
+# ===========================
+# ENDPOINTS
+# ===========================
 
-# GET: Ambil semua layanan
+# --- 5. ENDPOINT SERVICES ---
 @app.get("/services", response_model=List[Service])
 def get_services():
     return load_data(DB_SERVICES)
 
-# POST: Tambah layanan baru
 @app.post("/services")
 def add_service(service: Service):
     data = load_data(DB_SERVICES)
-    # Ubah objek Service ke dictionary biar bisa disimpan JSON
     data.append(service.dict())
     save_data(DB_SERVICES, data)
     return {"message": "Layanan berhasil ditambahkan!"}
 
-# DELETE: Hapus layanan berdasarkan judul (Simple version)
 @app.delete("/services/{title}")
 def delete_service(title: str):
     data = load_data(DB_SERVICES)
-    # Cari data yang judulnya BUKAN title yang mau dihapus (Filter)
-    new_data = [item for item in data if item["title"].lower() != title.lower()]
-    
-    if len(new_data) == len(data):
+    # Filter case-insensitive
+    filtered = [item for item in data if item["title"].lower() != title.lower()]
+
+    if len(filtered) == len(data):
         raise HTTPException(status_code=404, detail="Layanan tidak ditemukan")
-    
-    save_data(DB_SERVICES, new_data)
+
+    save_data(DB_SERVICES, filtered)
     return {"message": f"Layanan '{title}' berhasil dihapus"}
 
-# --- 6. ENDPOINT API (TESTIMONIALS) ---
-
+# --- 6. ENDPOINT TESTIMONIALS ---
 @app.get("/testimonials", response_model=List[Testimonial])
 def get_testimonials():
     return load_data(DB_TESTIMONIALS)
@@ -86,7 +92,32 @@ def add_testimonial(testi: Testimonial):
     save_data(DB_TESTIMONIALS, data)
     return {"message": "Testimoni berhasil ditambahkan!"}
 
-# --- 7. HOME (Cek Server Nyala) ---
+@app.delete("/testimonials/{name}")
+def delete_testimonial(name: str):
+    data = load_data(DB_TESTIMONIALS)
+    filtered = [item for item in data if item["name"].lower() != name.lower()]
+    save_data(DB_TESTIMONIALS, filtered)
+    return {"message": "Testimoni dihapus"}
+
+# --- 7. ENDPOINT MESSAGES (TICKETING) ---
+@app.post("/messages")
+def send_message(msg: Message):
+    data = load_data(DB_MESSAGES)
+    
+    # Isi timestamp dan status otomatis
+    new_msg = msg.dict()
+    new_msg['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    new_msg['is_read'] = False
+    
+    data.append(new_msg)
+    save_data(DB_MESSAGES, data)
+    return {"message": "Pesan terkirim!"}
+
+@app.get("/messages")
+def get_messages():
+    return load_data(DB_MESSAGES)
+
+# --- 8. ROOT CHECK ---
 @app.get("/")
-def read_root():
-    return {"status": "Backend FastAPI Berjalan Kencang! 🚀"}
+def root():
+    return {"status": "Backend FastAPI berjalan 🚀"}
