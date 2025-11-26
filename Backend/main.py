@@ -11,17 +11,18 @@ app = FastAPI()
 # --- 1. SETUP CORS ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Buat development. Production nanti diganti domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- 2. PATH DATABASE JSON (Teknik Absolute Path - Keren!) ---
+# --- 2. PATH DATABASE JSON (Teknik Absolute Path) ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_SERVICES = os.path.join(BASE_DIR, "../data/services.json")
 DB_TESTIMONIALS = os.path.join(BASE_DIR, "../data/testimonials.json")
-DB_MESSAGES = os.path.join(BASE_DIR, "../data/messages.json") # <-- Tambahan
+DB_MESSAGES = os.path.join(BASE_DIR, "../data/messages.json")
+DB_ARTICLES = os.path.join(BASE_DIR, "../data/articles.json") # <-- BARU: Blog
 
 # --- 3. MODEL DATA ---
 class Service(BaseModel):
@@ -37,87 +38,111 @@ class Message(BaseModel):
     name: str
     email: str
     text: str
-    # Field di bawah ini opsional (diisi otomatis oleh server)
     is_read: Optional[bool] = False 
     timestamp: Optional[str] = None
 
+class Article(BaseModel): # <-- BARU: Blog
+    title: str
+    category: str
+    content: str
+    date: Optional[str] = None
+
+class LoginItem(BaseModel): # <-- BARU: Login
+    username: str
+    password: str
+
 # --- 4. UTIL: BACA & TULIS JSON ---
 def load_data(filepath):
-    if not os.path.exists(filepath):
-        return []
-    with open(filepath, "r") as f:
-        return json.load(f)
+    if not os.path.exists(filepath): return []
+    with open(filepath, "r") as f: return json.load(f)
 
 def save_data(filepath, data):
-    with open(filepath, "w") as f:
-        json.dump(data, f, indent=2)
+    with open(filepath, "w") as f: json.dump(data, f, indent=2)
 
 # ===========================
 # ENDPOINTS
 # ===========================
 
-# --- 5. ENDPOINT SERVICES ---
+# --- A. LOGIN ADMIN (PENTING BUAT DASHBOARD) ---
+@app.post("/login")
+def login(item: LoginItem):
+    # Password sederhana (Hardcoded)
+    if item.username == "admin" and item.password == "admin123":
+        return {"token": "rahasia-negara", "message": "Login Sukses"}
+    raise HTTPException(status_code=401, detail="Password salah bos!")
+
+# --- B. SERVICES ---
 @app.get("/services", response_model=List[Service])
-def get_services():
-    return load_data(DB_SERVICES)
+def get_services(): return load_data(DB_SERVICES)
 
 @app.post("/services")
-def add_service(service: Service):
+def add_service(s: Service):
     data = load_data(DB_SERVICES)
-    data.append(service.dict())
+    data.append(s.dict())
     save_data(DB_SERVICES, data)
-    return {"message": "Layanan berhasil ditambahkan!"}
+    return {"msg": "Saved"}
 
 @app.delete("/services/{title}")
 def delete_service(title: str):
     data = load_data(DB_SERVICES)
-    # Filter case-insensitive
-    filtered = [item for item in data if item["title"].lower() != title.lower()]
+    save_data(DB_SERVICES, [x for x in data if x["title"].lower() != title.lower()])
+    return {"msg": "Deleted"}
 
-    if len(filtered) == len(data):
-        raise HTTPException(status_code=404, detail="Layanan tidak ditemukan")
-
-    save_data(DB_SERVICES, filtered)
-    return {"message": f"Layanan '{title}' berhasil dihapus"}
-
-# --- 6. ENDPOINT TESTIMONIALS ---
+# --- C. TESTIMONIALS ---
 @app.get("/testimonials", response_model=List[Testimonial])
-def get_testimonials():
-    return load_data(DB_TESTIMONIALS)
+def get_testimonials(): return load_data(DB_TESTIMONIALS)
 
 @app.post("/testimonials")
-def add_testimonial(testi: Testimonial):
+def add_testimonial(t: Testimonial):
     data = load_data(DB_TESTIMONIALS)
-    data.append(testi.dict())
+    data.append(t.dict())
     save_data(DB_TESTIMONIALS, data)
-    return {"message": "Testimoni berhasil ditambahkan!"}
+    return {"msg": "Saved"}
 
 @app.delete("/testimonials/{name}")
 def delete_testimonial(name: str):
     data = load_data(DB_TESTIMONIALS)
-    filtered = [item for item in data if item["name"].lower() != name.lower()]
-    save_data(DB_TESTIMONIALS, filtered)
-    return {"message": "Testimoni dihapus"}
+    save_data(DB_TESTIMONIALS, [x for x in data if x["name"].lower() != name.lower()])
+    return {"msg": "Deleted"}
 
-# --- 7. ENDPOINT MESSAGES (TICKETING) ---
+# --- D. MESSAGES ---
+@app.get("/messages")
+def get_messages(): return load_data(DB_MESSAGES)
+
 @app.post("/messages")
-def send_message(msg: Message):
+def send_message(m: Message):
     data = load_data(DB_MESSAGES)
-    
-    # Isi timestamp dan status otomatis
-    new_msg = msg.dict()
+    new_msg = m.dict()
     new_msg['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    new_msg['is_read'] = False
-    
     data.append(new_msg)
     save_data(DB_MESSAGES, data)
-    return {"message": "Pesan terkirim!"}
+    return {"msg": "Sent"}
 
-@app.get("/messages")
-def get_messages():
-    return load_data(DB_MESSAGES)
+@app.delete("/messages/{email}") # <-- BARU: Hapus Pesan
+def delete_message(email: str):
+    data = load_data(DB_MESSAGES)
+    save_data(DB_MESSAGES, [x for x in data if x["email"] != email])
+    return {"msg": "Deleted"}
 
-# --- 8. ROOT CHECK ---
+# --- E. ARTICLES (BLOG) ---
+@app.get("/articles")
+def get_articles(): return load_data(DB_ARTICLES)
+
+@app.post("/articles")
+def add_article(a: Article):
+    data = load_data(DB_ARTICLES)
+    new_article = a.dict()
+    new_article['date'] = datetime.now().strftime("%Y-%m-%d")
+    data.append(new_article)
+    save_data(DB_ARTICLES, data)
+    return {"msg": "Saved"}
+
+@app.delete("/articles/{title}")
+def delete_article(title: str):
+    data = load_data(DB_ARTICLES)
+    save_data(DB_ARTICLES, [x for x in data if x["title"].lower() != title.lower()])
+    return {"msg": "Deleted"}
+
+# --- F. ROOT ---
 @app.get("/")
-def root():
-    return {"status": "Backend FastAPI berjalan 🚀"}
+def root(): return {"status": "Backend Full Stack Ready 🚀"}

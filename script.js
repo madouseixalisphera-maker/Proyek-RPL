@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadServices();
     loadTestimonials();
     setupMobileMenu();
+    loadArticles(); 
     setupContactForm(); // <-- Fitur Baru!
 });
 
@@ -70,6 +71,41 @@ async function loadTestimonials() {
     } catch (error) {
         console.error("Error testimonials:", error);
     }
+}
+
+async function loadArticles() {
+    const container = document.getElementById('blog-container');
+    if (!container) return; // Hanya jalan di halaman blog.html
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/articles`);
+        const data = await response.json();
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+            container.innerHTML = '<p style="text-align:center; width:100%;">Belum ada artikel terbaru.</p>';
+            return;
+        }
+
+        data.forEach(item => {
+            const card = document.createElement('article');
+            card.className = 'blog-card fade-in';
+            // Kita potong konten biar gak kepanjangan (substring)
+            const shortContent = item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content;
+            
+            card.innerHTML = `
+                <div class="blog-thumbnail" style="background-color: #ddd;"></div> 
+                <div class="blog-content">
+                    <span class="blog-category">${item.category}</span>
+                    <h3>${item.title}</h3>
+                    <p>${shortContent}</p>
+                    <small style="color:#888; display:block; margin-bottom:10px;">📅 ${item.date}</small>
+                    <a href="#" class="read-more">Baca Selengkapnya &rarr;</a>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } catch (error) { console.error("Error articles:", error); }
 }
 
 // ===========================

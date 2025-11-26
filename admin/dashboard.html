@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin</title>
+    <link rel="stylesheet" href="admin.css"> </head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <h2>Admin Panel</h2>
+            <div class="menu-item active" onclick="showSection('dashboard')">🏠 Dashboard</div>
+            <div class="menu-item" onclick="showSection('services')">🛠️ Layanan</div>
+            <div class="menu-item" onclick="showSection('blog')">📝 Artikel / Blog</div> <div class="menu-item" onclick="showSection('testimonials')">💬 Testimoni</div>
+            <div class="menu-item" onclick="showSection('messages')">✉️ Pesan</div>
+            <div class="menu-item menu-logout" onclick="logout()">🚪 Logout</div>
+        </div>
+
+        <div class="content">
+            <div id="dashboard" class="section active-section">
+                <h1>Dashboard Overview</h1>
+                <div class="stats-grid">
+                    <div class="stat-card"><div>Total Layanan</div><div class="stat-number" id="count-services">0</div></div>
+                    <div class="stat-card"><div>Total Artikel</div><div class="stat-number" id="count-articles">0</div></div>
+                    <div class="stat-card"><div>Total Testimoni</div><div class="stat-number" id="count-testimoni">0</div></div>
+                    <div class="stat-card"><div>Pesan Masuk</div><div class="stat-number" id="count-messages">0</div></div>
+                </div>
+            </div>
+
+            <div id="services" class="section">
+                <h1>Kelola Layanan</h1>
+                <div class="form-box">
+                    <h3>Tambah Layanan</h3>
+                    <input type="text" id="svc-title" placeholder="Judul Layanan">
+                    <textarea id="svc-desc" placeholder="Deskripsi Singkat"></textarea>
+                    <button class="btn-primary" onclick="addService()">+ Simpan Layanan</button>
+                </div>
+                <table><thead><tr><th>Layanan</th><th>Deskripsi</th><th>Aksi</th></tr></thead><tbody id="tbl-services"></tbody></table>
+            </div>
+
+            <div id="blog" class="section">
+                <h1>Kelola Artikel Blog</h1>
+                <div class="form-box">
+                    <h3>Tulis Artikel Baru</h3>
+                    <input type="text" id="blog-title" placeholder="Judul Artikel">
+                    <input type="text" id="blog-cat" placeholder="Kategori (Misal: Teknologi)">
+                    <textarea id="blog-content" placeholder="Isi artikel..." rows="5"></textarea>
+                    <button class="btn-primary" onclick="addArticle()">+ Terbitkan Artikel</button>
+                </div>
+                <table><thead><tr><th>Tanggal</th><th>Judul</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody id="tbl-blog"></tbody></table>
+            </div>
+
+            <div id="testimonials" class="section">
+                <h1>Kelola Testimoni</h1>
+                <div class="form-box">
+                    <h3>Tambah Testimoni</h3>
+                    <input type="text" id="testi-name" placeholder="Nama Klien">
+                    <input type="text" id="testi-role" placeholder="Jabatan">
+                    <textarea id="testi-quote" placeholder="Kutipan"></textarea>
+                    <button class="btn-primary" onclick="addTesti()">+ Simpan Testimoni</button>
+                </div>
+                <table><thead><tr><th>Nama</th><th>Role</th><th>Quote</th><th>Aksi</th></tr></thead><tbody id="tbl-testi"></tbody></table>
+            </div>
+
+            <div id="messages" class="section">
+                <h1>Pesan Masuk</h1>
+                <table><thead><tr><th>Waktu</th><th>Pengirim</th><th>Pesan</th><th>Aksi</th></tr></thead><tbody id="tbl-messages"></tbody></table>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>
