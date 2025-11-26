@@ -1,14 +1,19 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional
-import json
-import os
+from sqlalchemy.orm import Session
+from typing import List
 from datetime import datetime
+
+# --- IMPORT DARI FILE TETANGGA ---
+import models
+import schemas
+from database import engine, get_db
+
+# Bikin Tabel Otomatis
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# --- 1. SETUP CORS ---
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,132 +22,141 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 2. PATH DATABASE JSON (Teknik Absolute Path) ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_SERVICES = os.path.join(BASE_DIR, "../data/services.json")
-DB_TESTIMONIALS = os.path.join(BASE_DIR, "../data/testimonials.json")
-DB_MESSAGES = os.path.join(BASE_DIR, "../data/messages.json")
-DB_ARTICLES = os.path.join(BASE_DIR, "../data/articles.json") # <-- BARU: Blog
-
-# --- 3. MODEL DATA ---
-class Service(BaseModel):
-    title: str
-    description: str
-
-class Testimonial(BaseModel):
-    name: str
-    role: str
-    quote: str
-
-class Message(BaseModel):
-    name: str
-    email: str
-    text: str
-    is_read: Optional[bool] = False 
-    timestamp: Optional[str] = None
-
-class Article(BaseModel): # <-- BARU: Blog
-    title: str
-    category: str
-    content: str
-    date: Optional[str] = None
-
-class LoginItem(BaseModel): # <-- BARU: Login
-    username: str
-    password: str
-
-# --- 4. UTIL: BACA & TULIS JSON ---
-def load_data(filepath):
-    if not os.path.exists(filepath): return []
-    with open(filepath, "r") as f: return json.load(f)
-
-def save_data(filepath, data):
-    with open(filepath, "w") as f: json.dump(data, f, indent=2)
-
 # ===========================
 # ENDPOINTS
 # ===========================
 
-# --- A. LOGIN ADMIN (PENTING BUAT DASHBOARD) ---
+# --- LOGIN ---
 @app.post("/login")
-def login(item: LoginItem):
-    # Password sederhana (Hardcoded)
-    if item.username == "admin" and item.password == "admin123":
+def login(item: schemas.LoginItem):
+    if item.username == "Arassya" and item.password == "#akusayangadmin1":
         return {"token": "rahasia-negara", "message": "Login Sukses"}
     raise HTTPException(status_code=401, detail="Password salah bos!")
 
-# --- B. SERVICES ---
-@app.get("/services", response_model=List[Service])
-def get_services(): return load_data(DB_SERVICES)
+# --- SERVICES ---
+@app.get("/services", response_model=List[schemas.Service])
+def get_services(db: Session = Depends(get_db)):
+    return db.query(models.DBService).all()
 
 @app.post("/services")
-def add_service(s: Service):
-    data = load_data(DB_SERVICES)
-    data.append(s.dict())
-    save_data(DB_SERVICES, data)
+def add_service(s: schemas.Service, db: Session = Depends(get_db)):
+    db_service = models.DBService(title=s.title, description=s.description)
+    try:
+        db.add(db_service)
+        db.commit()
+    except:
+        raise HTTPException(400, "Judul ada")
     return {"msg": "Saved"}
+
+@app.put("/services/{original_title}")
+def update_service(original_title: str, s: schemas.Service, db: Session = Depends(get_db)):
+    item = db.query(models.DBService).filter(models.DBService.title == original_title).first()
+    if not item: raise HTTPException(404, "Not Found")
+    item.title = s.title
+    item.description = s.description
+    db.commit()
+    return {"msg": "Updated"}
 
 @app.delete("/services/{title}")
-def delete_service(title: str):
-    data = load_data(DB_SERVICES)
-    save_data(DB_SERVICES, [x for x in data if x["title"].lower() != title.lower()])
+def delete_service(title: str, db: Session = Depends(get_db)):
+    db.query(models.DBService).filter(models.DBService.title == title).delete()
+    db.commit()
     return {"msg": "Deleted"}
 
-# --- C. TESTIMONIALS ---
-@app.get("/testimonials", response_model=List[Testimonial])
-def get_testimonials(): return load_data(DB_TESTIMONIALS)
+# --- TESTIMONI ---
+@app.get("/testimonials", response_model=List[schemas.Testimonial])
+def get_testimonials(db: Session = Depends(get_db)):
+    return db.query(models.DBTestimonial).all()
 
 @app.post("/testimonials")
-def add_testimonial(t: Testimonial):
-    data = load_data(DB_TESTIMONIALS)
-    data.append(t.dict())
-    save_data(DB_TESTIMONIALS, data)
+def add_testimonial(t: schemas.Testimonial, db: Session = Depends(get_db)):
+    db_testi = models.DBTestimonial(name=t.name, role=t.role, quote=t.quote)
+    try:
+        db.add(db_testi)
+        db.commit()
+    except:
+        raise HTTPException(400, "Nama ada")
     return {"msg": "Saved"}
+
+@app.put("/testimonials/{original_name}")
+def update_testimonial(original_name: str, t: schemas.Testimonial, db: Session = Depends(get_db)):
+    item = db.query(models.DBTestimonial).filter(models.DBTestimonial.name == original_name).first()
+    if not item: raise HTTPException(404, "Not Found")
+    item.name = t.name
+    item.role = t.role
+    item.quote = t.quote
+    db.commit()
+    return {"msg": "Updated"}
 
 @app.delete("/testimonials/{name}")
-def delete_testimonial(name: str):
-    data = load_data(DB_TESTIMONIALS)
-    save_data(DB_TESTIMONIALS, [x for x in data if x["name"].lower() != name.lower()])
+def delete_testimonial(name: str, db: Session = Depends(get_db)):
+    db.query(models.DBTestimonial).filter(models.DBTestimonial.name == name).delete()
+    db.commit()
     return {"msg": "Deleted"}
 
-# --- D. MESSAGES ---
-@app.get("/messages")
-def get_messages(): return load_data(DB_MESSAGES)
+# --- MESSAGES ---
+@app.get("/messages", response_model=List[schemas.Message])
+def get_messages(db: Session = Depends(get_db)):
+    return db.query(models.DBMessage).all()
 
 @app.post("/messages")
-def send_message(m: Message):
-    data = load_data(DB_MESSAGES)
-    new_msg = m.dict()
-    new_msg['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    data.append(new_msg)
-    save_data(DB_MESSAGES, data)
+def send_message(m: schemas.Message, db: Session = Depends(get_db)):
+    new_msg = models.DBMessage(
+        name=m.name, email=m.email, text=m.text,
+        is_read=False, timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
+    db.add(new_msg)
+    db.commit()
     return {"msg": "Sent"}
 
-@app.delete("/messages/{email}") # <-- BARU: Hapus Pesan
-def delete_message(email: str):
-    data = load_data(DB_MESSAGES)
-    save_data(DB_MESSAGES, [x for x in data if x["email"] != email])
+@app.put("/messages/{email}")
+def mark_read(email: str, db: Session = Depends(get_db)):
+    item = db.query(models.DBMessage).filter(models.DBMessage.email == email).first()
+    if item:
+        item.is_read = True
+        db.commit()
+        return {"msg": "Read"}
+    raise HTTPException(404, "Not Found")
+
+@app.delete("/messages/{email}")
+def delete_message(email: str, db: Session = Depends(get_db)):
+    db.query(models.DBMessage).filter(models.DBMessage.email == email).delete()
+    db.commit()
     return {"msg": "Deleted"}
 
-# --- E. ARTICLES (BLOG) ---
-@app.get("/articles")
-def get_articles(): return load_data(DB_ARTICLES)
+# --- ARTICLES ---
+@app.get("/articles", response_model=List[schemas.Article])
+def get_articles(db: Session = Depends(get_db)):
+    return db.query(models.DBArticle).all()
 
 @app.post("/articles")
-def add_article(a: Article):
-    data = load_data(DB_ARTICLES)
-    new_article = a.dict()
-    new_article['date'] = datetime.now().strftime("%Y-%m-%d")
-    data.append(new_article)
-    save_data(DB_ARTICLES, data)
+def add_article(a: schemas.Article, db: Session = Depends(get_db)):
+    new_art = models.DBArticle(
+        title=a.title, category=a.category, content=a.content,
+        date=datetime.now().strftime("%Y-%m-%d")
+    )
+    try:
+        db.add(new_art)
+        db.commit()
+    except:
+        raise HTTPException(400, "Judul Sama")
     return {"msg": "Saved"}
 
+@app.put("/articles/{original_title}")
+def update_article(original_title: str, a: schemas.Article, db: Session = Depends(get_db)):
+    item = db.query(models.DBArticle).filter(models.DBArticle.title == original_title).first()
+    if not item: raise HTTPException(404, "Not Found")
+    item.title = a.title
+    item.category = a.category
+    item.content = a.content
+    db.commit()
+    return {"msg": "Updated"}
+
 @app.delete("/articles/{title}")
-def delete_article(title: str):
-    data = load_data(DB_ARTICLES)
-    save_data(DB_ARTICLES, [x for x in data if x["title"].lower() != title.lower()])
+def delete_article(title: str, db: Session = Depends(get_db)):
+    db.query(models.DBArticle).filter(models.DBArticle.title == title).delete()
+    db.commit()
     return {"msg": "Deleted"}
 
-# --- F. ROOT ---
 @app.get("/")
-def root(): return {"status": "Backend Full Stack Ready 🚀"}
+def root(): return {"status": "Backend Modular Ready 🚀"}

@@ -29,10 +29,14 @@
             <div id="services" class="section">
                 <h1>Kelola Layanan</h1>
                 <div class="form-box">
-                    <h3>Tambah Layanan</h3>
-                    <input type="text" id="svc-title" placeholder="Judul Layanan">
+                    <h3 id="form-title-svc">Tambah Layanan</h3>
+                    <input type="hidden" id="original-title-svc"> <input type="text" id="svc-title" placeholder="Judul Layanan">
                     <textarea id="svc-desc" placeholder="Deskripsi Singkat"></textarea>
-                    <button class="btn-primary" onclick="addService()">+ Simpan Layanan</button>
+                    
+                    <div id="btn-group-svc">
+                        <button class="btn-primary" onclick="addService()">+ Simpan Layanan</button>
+                    </div>
+                    <button id="btn-cancel-svc" onclick="resetFormSvc()" style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal Edit</button>
                 </div>
                 <table><thead><tr><th>Layanan</th><th>Deskripsi</th><th>Aksi</th></tr></thead><tbody id="tbl-services"></tbody></table>
             </div>
@@ -40,23 +44,38 @@
             <div id="blog" class="section">
                 <h1>Kelola Artikel Blog</h1>
                 <div class="form-box">
-                    <h3>Tulis Artikel Baru</h3>
+                    <h3 id="form-title-blog">Tulis Artikel Baru</h3>
+                    
+                    <input type="hidden" id="original-title-blog"> 
+                    
                     <input type="text" id="blog-title" placeholder="Judul Artikel">
                     <input type="text" id="blog-cat" placeholder="Kategori (Misal: Teknologi)">
                     <textarea id="blog-content" placeholder="Isi artikel..." rows="5"></textarea>
-                    <button class="btn-primary" onclick="addArticle()">+ Terbitkan Artikel</button>
+                    
+                    <div id="btn-group-blog">
+                        <button class="btn-primary" onclick="addArticle()">+ Terbitkan Artikel</button>
+                    </div>
+                    <button id="btn-cancel-blog" onclick="resetFormBlog()" style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal Edit</button>
                 </div>
-                <table><thead><tr><th>Tanggal</th><th>Judul</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody id="tbl-blog"></tbody></table>
+                
+                <table>
+                    <thead><tr><th>Tanggal</th><th>Judul</th><th>Kategori</th><th>Aksi</th></tr></thead>
+                    <tbody id="tbl-blog"></tbody>
+                </table>
             </div>
 
             <div id="testimonials" class="section">
                 <h1>Kelola Testimoni</h1>
                 <div class="form-box">
-                    <h3>Tambah Testimoni</h3>
-                    <input type="text" id="testi-name" placeholder="Nama Klien">
+                    <h3 id="form-title-testi">Tambah Testimoni</h3>
+                    <input type="hidden" id="original-name-testi"> <input type="text" id="testi-name" placeholder="Nama Klien">
                     <input type="text" id="testi-role" placeholder="Jabatan">
                     <textarea id="testi-quote" placeholder="Kutipan"></textarea>
-                    <button class="btn-primary" onclick="addTesti()">+ Simpan Testimoni</button>
+                    
+                    <div id="btn-group-testi">
+                        <button class="btn-primary" onclick="addTesti()">+ Simpan Testimoni</button>
+                    </div>
+                    <button id="btn-cancel-testi" onclick="resetFormTesti()" style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal Edit</button>
                 </div>
                 <table><thead><tr><th>Nama</th><th>Role</th><th>Quote</th><th>Aksi</th></tr></thead><tbody id="tbl-testi"></tbody></table>
             </div>
