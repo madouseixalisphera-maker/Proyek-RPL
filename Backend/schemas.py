@@ -35,3 +35,10 @@ class Article(BaseModel):
 class LoginItem(BaseModel): 
     username: str
     password: str
+
+class Service(BaseModel):
+    title: str
+    description: str
+    icon: str  # <--- DATA BARU WAJIB
+    class Config:
+        orm_mode = True

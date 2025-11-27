@@ -1,0 +1,12 @@
+# Abaikan folder sampah Python
+__pycache__/
+*.py[cod]
+
+# Abaikan database lokal (karena nanti di hosting pakai Supabase/PostgreSQL)
+*.db
+*.sqlite3
+app.db
+
+# Abaikan folder environment (kalau ada)
+venv/
+env/

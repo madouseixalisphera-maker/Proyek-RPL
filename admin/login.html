@@ -3,34 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Login Admin</title>
-    <link rel="stylesheet" href="admin.css"> </head>
+    <link rel="stylesheet" href="admin.css"> 
+</head>
 <body>
     <div class="login-container">
         <div class="login-box">
             <h2>Admin Area 🔒</h2>
-            <input type="text" id="username" placeholder="Username (admin)">
-            <input type="password" id="password" placeholder="Password (admin123)">
-            <button onclick="handleLogin()">MASUK DASHBOARD</button>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="username" placeholder="Username (Arassya)" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">MASUK DASHBOARD</button>
+            </form>
         </div>
     </div>
 
-    <script>
-        async function handleLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            try {
-                const res = await fetch('http://127.0.0.1:8000/login', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username: u, password: p})
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    localStorage.setItem('admin_token', data.token);
-                    window.location.href = 'dashboard.html';
-                } else { alert("Login Gagal!"); }
-            } catch (err) { alert("Backend belum nyala bos!"); }
-        }
-    </script>
+    <script src="admin.js"></script>
 </body>
 </html>

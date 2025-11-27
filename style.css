@@ -520,6 +520,25 @@ footer {
     line-height: 1.6;
 }
 
+/* --- FIX TEXT OVERFLOW (MEMOTONG KATA KEPANJANGAN) --- */
+.card p, 
+.blog-card p, 
+.profile-grid p,
+.form-container,
+h1, h2, h3, h4 {
+    /* 1. Standar Modern: Memotong kata hanya jika terlalu panjang */
+    overflow-wrap: break-word;  
+    
+    /* 2. Support Browser Lama */
+    word-wrap: break-word;      
+
+    /* 3. Jaga-jaga: Memaksa break jika cara di atas gagal */
+    word-break: break-word;     
+    
+    /* Opsional: Menambahkan tanda strip (-) otomatis */
+    hyphens: auto;              
+}
+
 /* Input Form biar gak putih silau */
 input, textarea {
     width: 100%;
@@ -632,29 +651,26 @@ input:focus, textarea:focus {
         flex-direction: column; /* Tombol jadi atas-bawah, bukan samping-sampingan */
         gap: 15px;
         width: 100%;
-        padding: 0 20px; /* Kasih jarak kiri kanan biar gak nempel layar */
+        padding: 0 20px; 
     }
 
     .cta-buttons a {
-        width: 100%; /* Link pembungkus tombol jadi full */
+        width: 100%; 
     }
 
     .btn-primary, .btn-secondary {
-        width: 100%; /* Tombol dipaksa lebar full */
-        display: block; /* Biar ngisi ruang */
-        margin: 0; /* Reset margin aneh2 */
-        min-width: unset; /* Hapus batasan lebar minimum 200px tadi */
+        width: 100%; 
+        display: block;
+        margin: 0; 
+        min-width: unset;
     }
 
-    /* 4. PERBAIKAN UKURAN TEKS HP */
     .home-page h1 { font-size: 2.5rem; line-height: 1.2; }
     .section-title { font-size: 2rem; }
     
-    /* Biar naga gak ketutupan header di HP */
     .home-page { padding-top: 150px; }
 }
 
-/* Animasi Fade In buat menu (opsional tapi bagus) */
 @keyframes navLinkFade {
     from { opacity: 0; transform: translateX(50px); }
     to { opacity: 1; transform: translateX(0); }

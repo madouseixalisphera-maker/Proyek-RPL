@@ -6,12 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadArticles(); 
     setupMobileMenu();
     setupContactForm();
-    setupParallax(); // Saya pisah fungsinya biar rapi
+    setupParallax(); 
 });
 
-// ===========================
-// 1. LOAD LAYANAN (GET)
-// ===========================
 async function loadServices() {
     const container = document.getElementById('services-container');
     if (!container) return; 
@@ -24,28 +21,32 @@ async function loadServices() {
         container.innerHTML = '';
 
         data.forEach(service => {
-            // STEP PENTING: Kita bikin elemen div
             const card = document.createElement('div');
             
-            // STEP PENTING: Kita kasih class 'card'. 
-            // Otomatis dia bakal jadi Transparan Gelap (sesuai CSS baru)
             card.className = 'card service-card fade-in';
             
             card.innerHTML = `
+                <div class="service-icon" style="font-size: 3rem; color: #00d4ff; margin-bottom: 15px;">
+                    <i class="${service.icon}"></i>
+                </div>
+
                 <h3>${service.title}</h3>
                 <p>${service.description}</p>
             `;
             container.appendChild(card);
         });
     } catch (error) {
-        console.error("Error services:", error);
-        container.innerHTML = '<p style="color:white;">Gagal memuat data layanan.</p>';
-    }
+    console.error("Error services:", error);
+    
+    container.innerHTML = `
+        <div class="card" style="grid-column: 1 / -1; text-align: center;">
+            <h3 style="color: #ef4444;">⚠️ Gagal Memuat Data</h3>
+            <p>Maaf, server sedang dalam perbaikan. Silakan coba lagi nanti.</p>
+        </div>
+    `;
+}
 }
 
-// ===========================
-// 2. LOAD TESTIMONI (GET)
-// ===========================
 async function loadTestimonials() {
     const container = document.getElementById('testimoni-container');
     if (!container) return;
@@ -60,7 +61,6 @@ async function loadTestimonials() {
         data.forEach(testi => {
             const card = document.createElement('div');
             
-            // Sama, kita kasih class 'card' biar desainnya seragam
             card.className = 'card testimoni-card fade-in';
             
             card.innerHTML = `
@@ -71,13 +71,16 @@ async function loadTestimonials() {
             container.appendChild(card);
         });
     } catch (error) {
-        console.error("Error testimonials:", error);
-    }
+    console.error("Error testimonials:", error);
+    
+    container.innerHTML = `
+        <div class="card" style="grid-column: 1 / -1; text-align: center;">
+            <p style="font-style: italic; color: #94a3b8;">"Testimoni tidak dapat ditampilkan saat ini."</p>
+        </div>
+    `;
+}   
 }
 
-// ===========================
-// 3. LOAD ARTIKEL (GET)
-// ===========================
 async function loadArticles() {
     const container = document.getElementById('blog-container');
     if (!container) return; 
@@ -94,7 +97,6 @@ async function loadArticles() {
 
         data.forEach(item => {
             const card = document.createElement('article');
-            // Blog card juga pakai style 'card' atau 'blog-card' yang sudah kita set di CSS
             card.className = 'blog-card fade-in';
             
             const shortContent = item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content;
@@ -111,12 +113,17 @@ async function loadArticles() {
             `;
             container.appendChild(card);
         });
-    } catch (error) { console.error("Error articles:", error); }
+    } catch (error) {
+    console.error("Error articles:", error);
+    container.innerHTML = `
+         <div class="blog-card" style="grid-column: 1 / -1; padding: 40px; text-align: center;">
+            <h3>Mode Offline</h3>
+            <p>Gagal terhubung ke server artikel.</p>
+        </div>
+    `;
+}
 }
 
-// ===========================
-// 4. CONTACT FORM (POST)
-// ===========================
 function setupContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
@@ -158,9 +165,6 @@ function setupContactForm() {
     });
 }
 
-// ===========================
-// 5. MOBILE MENU
-// ===========================
 function setupMobileMenu() {
     const burger = document.querySelector('.burger-menu');
     const nav = document.querySelector('.nav-links');
@@ -181,13 +185,9 @@ function setupMobileMenu() {
     }
 }
 
-// ===========================
-// 6. BACKGROUND NAGA PARALLAX (OPTIMIZED)
-// ===========================
 function setupParallax() {
     const nagaBg = document.getElementById('naga-bg');
     
-    // Cek dulu elemennya ada gak (biar gak error di halaman dashboard admin misal)
     if (!nagaBg) return;
 
     let lastScrollY = 0;
@@ -198,13 +198,11 @@ function setupParallax() {
 
         if (!ticking) {
             window.requestAnimationFrame(function() {
-                // RUMUS: movement * 0.5 artinya gerak setengah kecepatan scroll
                 let movement = lastScrollY * 0.5; 
                 
                 let pos1 = 0 + movement;
                 let pos2 = 50 + movement;
 
-                // Update posisi background CSS
                 nagaBg.style.backgroundPosition = 
                     `0px ${pos1}px, 30px ${pos2}px, 0px ${pos1}px, 30px ${pos2}px`;
 
@@ -215,7 +213,3 @@ function setupParallax() {
         }
     });
 }
-
-// Catatan:
-// Animasi API LOGO (Turbulence) sudah jalan otomatis lewat HTML <animate> tag.
-// Jadi tidak butuh kode JS tambahan untuk menjalankannya. Simpel kan?
