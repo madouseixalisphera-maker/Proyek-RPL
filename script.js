@@ -3,9 +3,10 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
 document.addEventListener('DOMContentLoaded', () => {
     loadServices();
     loadTestimonials();
-    setupMobileMenu();
     loadArticles(); 
-    setupContactForm(); // <-- Fitur Baru!
+    setupMobileMenu();
+    setupContactForm();
+    setupParallax(); // Saya pisah fungsinya biar rapi
 });
 
 // ===========================
@@ -13,22 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===========================
 async function loadServices() {
     const container = document.getElementById('services-container');
-    if (!container) return; // Stop kalau bukan di halaman home
+    if (!container) return; 
 
     try {
-        // UBAH JALUR: Dari file lokal ke API Backend
         const response = await fetch(`${API_BASE_URL}/services`);
-        
         if (!response.ok) throw new Error("Gagal fetch data");
-        
         const data = await response.json();
 
-        // Bersihkan wadah biar gak dobel
         container.innerHTML = '';
 
         data.forEach(service => {
+            // STEP PENTING: Kita bikin elemen div
             const card = document.createElement('div');
+            
+            // STEP PENTING: Kita kasih class 'card'. 
+            // Otomatis dia bakal jadi Transparan Gelap (sesuai CSS baru)
             card.className = 'card service-card fade-in';
+            
             card.innerHTML = `
                 <h3>${service.title}</h3>
                 <p>${service.description}</p>
@@ -37,7 +39,7 @@ async function loadServices() {
         });
     } catch (error) {
         console.error("Error services:", error);
-        container.innerHTML = '<p>Gagal memuat data layanan.</p>';
+        container.innerHTML = '<p style="color:white;">Gagal memuat data layanan.</p>';
     }
 }
 
@@ -49,22 +51,22 @@ async function loadTestimonials() {
     if (!container) return;
 
     try {
-        // UBAH JALUR: Ke API Backend
         const response = await fetch(`${API_BASE_URL}/testimonials`);
-        
         if (!response.ok) throw new Error("Gagal fetch data");
-
         const data = await response.json();
 
         container.innerHTML = '';
 
         data.forEach(testi => {
             const card = document.createElement('div');
+            
+            // Sama, kita kasih class 'card' biar desainnya seragam
             card.className = 'card testimoni-card fade-in';
+            
             card.innerHTML = `
                 <div class="testimoni-thumbnail"></div>
                 <p>"${testi.quote}"</p>
-                <h4>- ${testi.name}, <small>${testi.role}</small></h4>
+                <h4>- ${testi.name}, <small style="color: #94a3b8;">${testi.role}</small></h4>
             `;
             container.appendChild(card);
         });
@@ -73,9 +75,12 @@ async function loadTestimonials() {
     }
 }
 
+// ===========================
+// 3. LOAD ARTIKEL (GET)
+// ===========================
 async function loadArticles() {
     const container = document.getElementById('blog-container');
-    if (!container) return; // Hanya jalan di halaman blog.html
+    if (!container) return; 
 
     try {
         const response = await fetch(`${API_BASE_URL}/articles`);
@@ -83,18 +88,19 @@ async function loadArticles() {
         container.innerHTML = '';
 
         if (data.length === 0) {
-            container.innerHTML = '<p style="text-align:center; width:100%;">Belum ada artikel terbaru.</p>';
+            container.innerHTML = '<p style="text-align:center; width:100%; color:white;">Belum ada artikel terbaru.</p>';
             return;
         }
 
         data.forEach(item => {
             const card = document.createElement('article');
+            // Blog card juga pakai style 'card' atau 'blog-card' yang sudah kita set di CSS
             card.className = 'blog-card fade-in';
-            // Kita potong konten biar gak kepanjangan (substring)
+            
             const shortContent = item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content;
             
             card.innerHTML = `
-                <div class="blog-thumbnail" style="background-color: #ddd;"></div> 
+                <div class="blog-thumbnail"></div> 
                 <div class="blog-content">
                     <span class="blog-category">${item.category}</span>
                     <h3>${item.title}</h3>
@@ -109,49 +115,43 @@ async function loadArticles() {
 }
 
 // ===========================
-// 3. CONTACT FORM (POST)
+// 4. CONTACT FORM (POST)
 // ===========================
 function setupContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Mencegah halaman refresh
+        e.preventDefault(); 
 
-        // Ambil data dari input HTML
         const formData = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             text: document.getElementById('message').value
         };
 
-        // Ubah tombol jadi "Mengirim..."
         const btn = form.querySelector('button');
         const originalText = btn.innerText;
         btn.innerText = 'Mengirim...';
         btn.disabled = true;
 
         try {
-            // KIRIM KE BACKEND
             const response = await fetch(`${API_BASE_URL}/messages`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
 
             if (response.ok) {
-                alert("Pesan berhasil dikirim! Kami akan menghubungi Anda segera.");
-                form.reset(); // Kosongkan form
+                alert("Pesan berhasil dikirim!");
+                form.reset(); 
             } else {
-                alert("Gagal mengirim pesan. Coba lagi nanti.");
+                alert("Gagal mengirim pesan.");
             }
         } catch (error) {
-            console.error("Error kirim pesan:", error);
+            console.error("Error:", error);
             alert("Terjadi kesalahan koneksi.");
         } finally {
-            // Balikin tombol seperti semula
             btn.innerText = originalText;
             btn.disabled = false;
         }
@@ -159,7 +159,7 @@ function setupContactForm() {
 }
 
 // ===========================
-// 4. MOBILE MENU (UI)
+// 5. MOBILE MENU
 // ===========================
 function setupMobileMenu() {
     const burger = document.querySelector('.burger-menu');
@@ -180,3 +180,42 @@ function setupMobileMenu() {
         });
     }
 }
+
+// ===========================
+// 6. BACKGROUND NAGA PARALLAX (OPTIMIZED)
+// ===========================
+function setupParallax() {
+    const nagaBg = document.getElementById('naga-bg');
+    
+    // Cek dulu elemennya ada gak (biar gak error di halaman dashboard admin misal)
+    if (!nagaBg) return;
+
+    let lastScrollY = 0;
+    let ticking = false;
+
+    window.addEventListener('scroll', function() {
+        lastScrollY = window.scrollY;
+
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                // RUMUS: movement * 0.5 artinya gerak setengah kecepatan scroll
+                let movement = lastScrollY * 0.5; 
+                
+                let pos1 = 0 + movement;
+                let pos2 = 50 + movement;
+
+                // Update posisi background CSS
+                nagaBg.style.backgroundPosition = 
+                    `0px ${pos1}px, 30px ${pos2}px, 0px ${pos1}px, 30px ${pos2}px`;
+
+                ticking = false;
+            });
+
+            ticking = true;
+        }
+    });
+}
+
+// Catatan:
+// Animasi API LOGO (Turbulence) sudah jalan otomatis lewat HTML <animate> tag.
+// Jadi tidak butuh kode JS tambahan untuk menjalankannya. Simpel kan?

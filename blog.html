@@ -10,6 +10,20 @@
 </head>
 
 <body>
+    <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+            <filter id="blue-fire">
+                <feTurbulence id="turbulence" baseFrequency="0.1 0.1" numOctaves="2" seed="3">
+                    <animate attributeName="baseFrequency" dur="10s" values="0.1 0.1;0.12 0.2" repeatCount="indefinite"></animate>
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" scale="3"></feDisplacementMap>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Background Naga -->
+    <div id="naga-bg" class="naga-bg"></div>
+
     <header>
         <nav>
             <div class="logo">Something.AI</div>
@@ -23,8 +37,8 @@
                 <li><a href="index.html#company-profile">Profile</a></li>
                 <li><a href="index.html#layanan">Layanan</a></li>
                 <li><a href="index.html#testimoni">Testimoni</a></li>
-                <li><a href="index.html #contact-form">Kontak</a></li>
-                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html#contact-form">Kontak</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
             </ul>
         </nav>
     </header>
@@ -51,6 +65,7 @@
             </div>
         </div>
     </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
