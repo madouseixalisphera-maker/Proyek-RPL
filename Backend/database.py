@@ -4,23 +4,22 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 # --- KUNCI GUDANG (DATABASE URL) ---
-# Nanti URL PostgreSQL dari Supabasce/Neon ditaruh di sini
-# Format: postgresql://user:password@host:port/dbname
-# Untuk sementara kita pakai SQLite dulu buat tes lokal, nanti tinggal ganti string ini
-SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:pass@host/db" <--- Nanti pakai ini
 
-# Konfigurasi Engine
-# check_same_thread=False cuma perlu buat SQLite. Kalau udah Postgres nanti dihapus argumennya.
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# 1. MATIKAN SQLite (Kasih pagar # di depannya)
+# SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
+
+# 2. HIDUPKAN PostgreSQL (Hapus pagar # dan ISI URL SUPABASE KAMU)
+# Ganti teks "postgresql://..." di bawah dengan URL asli dari Dashboard Supabase kamu
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres.qzwtounybkqwpqvgzzih:rasyagg24275@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
+
+# 3. HAPUS ARGUMEN SQLite
+# Hapus bagian 'connect_args={"check_same_thread": False}' karena PostgreSQL tidak butuh itu.
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Fungsi untuk dipanggil di main.py
 def get_db():
     db = SessionLocal()
     try:

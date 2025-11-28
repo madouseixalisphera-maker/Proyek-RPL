@@ -1,20 +1,24 @@
 from pydantic import BaseModel
 from typing import Optional
 
-# Config: orm_mode = True wajib biar bisa baca data dari SQL
+# 1. SERVICE SCHEMA
 class Service(BaseModel):
     title: str
     description: str
+    icon: str  # Wajib ada Icon
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+# 2. TESTIMONIAL SCHEMA
 class Testimonial(BaseModel):
     name: str
     role: str
     quote: str
+    image_url: Optional[str] = None # Optional Gambar
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+# 3. MESSAGE SCHEMA
 class Message(BaseModel):
     name: str
     email: str
@@ -22,23 +26,19 @@ class Message(BaseModel):
     is_read: Optional[bool] = False 
     timestamp: Optional[str] = None
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+# 4. ARTICLE SCHEMA
 class Article(BaseModel):
     title: str
     category: str
     content: str
     date: Optional[str] = None
+    image_url: Optional[str] = None # Optional Gambar
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+# 5. LOGIN SCHEMA
 class LoginItem(BaseModel): 
     username: str
     password: str
-
-class Service(BaseModel):
-    title: str
-    description: str
-    icon: str  # <--- DATA BARU WAJIB
-    class Config:
-        orm_mode = True

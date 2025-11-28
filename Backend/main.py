@@ -4,13 +4,13 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime
 
-# --- IMPORT DARI FILE TETANGGA ---
+# --- IMPORT MODULAR ---
 import models
 import schemas
 from database import engine, get_db
 
-# Bikin Tabel Otomatis
-models.Base.metadata.create_all(bind=engine)
+# Bikin Tabel (Bypass Check)
+models.Base.metadata.create_all(bind=engine, checkfirst=True)
 
 app = FastAPI()
 
@@ -40,7 +40,8 @@ def get_services(db: Session = Depends(get_db)):
 
 @app.post("/services")
 def add_service(s: schemas.Service, db: Session = Depends(get_db)):
-    db_service = models.DBService(title=s.title, description=s.description)
+    # Pastikan 'icon' masuk ke database
+    db_service = models.DBService(title=s.title, description=s.description, icon=s.icon)
     try:
         db.add(db_service)
         db.commit()
@@ -54,6 +55,7 @@ def update_service(original_title: str, s: schemas.Service, db: Session = Depend
     if not item: raise HTTPException(404, "Not Found")
     item.title = s.title
     item.description = s.description
+    item.icon = s.icon # Update Icon juga
     db.commit()
     return {"msg": "Updated"}
 
@@ -70,7 +72,8 @@ def get_testimonials(db: Session = Depends(get_db)):
 
 @app.post("/testimonials")
 def add_testimonial(t: schemas.Testimonial, db: Session = Depends(get_db)):
-    db_testi = models.DBTestimonial(name=t.name, role=t.role, quote=t.quote)
+    # Tambah image_url
+    db_testi = models.DBTestimonial(name=t.name, role=t.role, quote=t.quote, image_url=t.image_url)
     try:
         db.add(db_testi)
         db.commit()
@@ -85,6 +88,7 @@ def update_testimonial(original_name: str, t: schemas.Testimonial, db: Session =
     item.name = t.name
     item.role = t.role
     item.quote = t.quote
+    item.image_url = t.image_url # Update Image
     db.commit()
     return {"msg": "Updated"}
 
@@ -133,7 +137,8 @@ def get_articles(db: Session = Depends(get_db)):
 def add_article(a: schemas.Article, db: Session = Depends(get_db)):
     new_art = models.DBArticle(
         title=a.title, category=a.category, content=a.content,
-        date=datetime.now().strftime("%Y-%m-%d")
+        date=datetime.now().strftime("%Y-%m-%d"),
+        image_url=a.image_url # Tambah image_url
     )
     try:
         db.add(new_art)
@@ -149,6 +154,7 @@ def update_article(original_title: str, a: schemas.Article, db: Session = Depend
     item.title = a.title
     item.category = a.category
     item.content = a.content
+    item.image_url = a.image_url # Update Image
     db.commit()
     return {"msg": "Updated"}
 
