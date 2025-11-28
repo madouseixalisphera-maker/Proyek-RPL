@@ -1,16 +1,8 @@
 :root {
   --color-white: #ffffff;
-  
-  /* Warna Aksen Utama (Sama kayak Logo Api Biru) */
   --color-highlight: #00d4ff; 
-  
-  /* Warna Aksen Kedua (Ungu Gelap - biar ada gradasi cantik) */
   --color-secondary: #005bea; 
-  
-  /* Warna Teks Abu-abu (biar gak sakit mata kalau putih semua) */
   --text-grey: #a0aab5; 
-  
-  /* Warna Background Kartu (Glass Gelap Kebiruan) */
   --glass-bg: rgba(20, 30, 50, 0.6); 
 }
 
@@ -32,7 +24,6 @@ body {
     line-height: 1.6;
 }
 
-/* --- KODE BACKGROUND NAGA (PARALLAX) --- */
 .naga-bg {
     position: fixed;
     top: 0; left: 0;
@@ -40,17 +31,12 @@ body {
     height: 100vh;
     z-index: -1;
     
-    /* 1. BASE COLOR: Kita ganti jadi lebih terang dikit (Midnight Blue) */
-    /* Sebelumnya #050505 (Hitam) */
     background-color: #121620; 
 
-    /* 2. PATTERN: Warnanya dibikin lebih "pop" */
     background-image:
-        /* Tulang: Opacity dinaikkan dari 0.1 jadi 0.15, warna dibikin lebih biru muda */
         radial-gradient(circle at 100% 50%, transparent 20%, rgba(148, 163, 184, 0.15) 21%, rgba(148, 163, 184, 0.15) 34%, transparent 35%, transparent),
         radial-gradient(circle at 0% 50%, transparent 20%, rgba(148, 163, 184, 0.15) 21%, rgba(148, 163, 184, 0.15) 34%, transparent 35%, transparent),
         
-        /* Shadow: Opacity diturunkan dikit biar gak terlalu pekat (0.4 -> 0.3) */
         radial-gradient(circle at 0% 50%, rgba(0,0,0,0.3) 0%, transparent 40%),
         radial-gradient(circle at 100% 50%, rgba(0,0,0,0.3) 0%, transparent 40%);
 
@@ -59,12 +45,10 @@ body {
     will-change: background-position;
 }
 
-/* 3. VIGNETTE: Pinggiran gelapnya kita kurangi */
 .naga-bg::after {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    /* Transparan lebih lebar (40% -> 50%) dan hitamnya gak pekat (rgba 0.8) */
     background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 120%);
     pointer-events: none;
 }
@@ -75,7 +59,7 @@ header {
     background-color: rgba(26, 26, 26, 0.85);
     padding: 15px 40px;
     z-index: 1000;
-    backdrop-filter: blur(5px); /* Efek blur di belakang header */
+    backdrop-filter: blur(5px); 
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
@@ -88,25 +72,20 @@ nav {
 }
 
 .logo {
-    font-size: 2rem; /* Agak gedein dikit biar gahar */
-    font-weight: 800; /* Harus tebal biar efeknya kelihatan */
+    font-size: 2rem;
+    font-weight: 800; 
     text-decoration: none;
     position: relative;
     
-    /* Warna dasar teks (Putih kebiruan) */
     color: #e0f7fa; 
     
-    /* EFEK API BIRU (GLOWING) */
     text-shadow: 
-        0 0 4px #00d4ff,           /* Inti api */
-        0 -5px 10px #0077be,       /* Lidah api tengah */
-        0 -10px 20px #003366,      /* Lidah api luar */
-        2px -15px 30px rgba(0, 212, 255, 0.5); /* Haze */
-
-    /* INI KUNCI ANIMASINYA: Memanggil filter SVG dari HTML tadi */
+        0 0 4px #00d4ff,          
+        0 -5px 10px #0077be,       
+        0 -10px 20px #003366,      
+        2px -15px 30px rgba(0, 212, 255, 0.5);
     filter: url(#blue-fire);
     
-    /* Sedikit animasi kedip biar kayak energi listrik tidak stabil */
     animation: flicker 3s infinite alternate;
 }
 
@@ -116,7 +95,6 @@ nav {
 }
 
 .logo:hover {
-    /* Pas di-hover, apinya "mengamuk" dikit */
     text-shadow: 
         0 0 5px #fff,
         0 -5px 15px #00d4ff,
@@ -172,25 +150,20 @@ section {
 .home-page h1 {
     font-size: 3.5rem;
     margin-bottom: 10px;
+    background: -webkit-linear-gradient(#fff, #b3e5fc); 
+    background: linear-gradient(to bottom, #fff, #b3e5fc); 
     
-    /* 1. Definisi Gradasi */
-    background: -webkit-linear-gradient(#fff, #b3e5fc); /* Untuk Browser lama */
-    background: linear-gradient(to bottom, #fff, #b3e5fc); /* Standar modern */
+    -webkit-background-clip: text; 
+    background-clip: text;         
     
-    /* 2. Potong Background mengikuti Teks */
-    -webkit-background-clip: text; /* Ini yang dikomplain editor (Khusus Chrome/Safari) */
-    background-clip: text;         /* <--- TAMBAHKAN INI (Versi Standar) */
-    
-    /* 3. Bikin warna teks transparan biar backgroundnya kelihatan */
     -webkit-text-fill-color: transparent;
-    color: transparent; /* Tambahan untuk jaga-jaga */
+    color: transparent; 
     
-    /* Drop shadow */
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 
 .home-page p, .home-page h2 {
-    color: var(--text-grey); /* Warna abu-abu soft */
+    color: var(--text-grey); 
 }
 
 .cta-buttons {
@@ -198,15 +171,10 @@ section {
     gap: 20px;
 }
 
-/* Gunakan class spesifik, jangan tag 'button' sendirian biar aman */
+
 .btn-primary, .btn-secondary, button[type="submit"] {
-    /* 1. Jangan pakai width/height mati. Pakai padding. */
     padding: 15px 40px; 
-    
-    /* 2. Kalau mau tombolnya punya lebar minimal (biar gak kekecilan), pakai ini: */
     min-width: 200px; 
-    
-    /* Sisa styling lama kamu... */
     font-size: 1rem;
     font-weight: bold;
     border-radius: 5px;
@@ -215,13 +183,12 @@ section {
 }
 button,
 .btn-primary {
-    /* Gradasi Biru ke Ungu (Cyberpunk style) */
     background: linear-gradient(90deg, var(--color-highlight), var(--color-secondary));
-    color: #ffffff; /* Teks Putih */
+    color: #ffffff;
     border: none;
     font-weight: 700;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.4); /* Efek glowing */
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.4); 
 }
 
 .btn-primary:hover {
@@ -229,11 +196,10 @@ button,
     box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
 }
 
-/* Update tombol Secondary (Outline tapi lebih terang) */
 .btn-secondary {
     background: transparent;
-    color: var(--color-highlight); /* Teksnya warna biru neon */
-    border: 2px solid var(--color-highlight); /* Garisnya biru neon */
+    color: var(--color-highlight); 
+    border: 2px solid var(--color-highlight);
     box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.1);
 }
 
@@ -262,7 +228,7 @@ button:hover {
 
 .services-container, .testimoni-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsif otomatis */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
     gap: 30px;
     width: 100%;
 }
@@ -302,24 +268,19 @@ input, textarea {
 }
 
 footer {
-    /* 1. Ubah background solid jadi semi-transparan gelap */
     background: rgba(10, 10, 10, 0.7); 
-    
-    /* 2. Kasih efek blur biar teks footer jelas walau backgroundnya rame */
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* Support Safari */
+    -webkit-backdrop-filter: blur(10px); 
 
-    /* 3. Kasih garis pemisah tipis yang elegan di atas */
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 
     padding: 40px 20px;
     text-align: center;
     position: relative;
-    z-index: 10; /* Pastikan di atas background naga */
-    margin-top: 50px; /* Jarak dari konten atas */
+    z-index: 10; 
+    margin-top: 50px; 
 }
 
-/* Bonus: Bikin link sosmed nyala pas di-hover */
 .social-media a {
     color: var(--color-white);
     text-decoration: none;
@@ -331,7 +292,7 @@ footer {
 }
 
 .social-media a:hover {
-    background-color: var(--color-highlight); /* Biru neon */
+    background-color: var(--color-highlight); 
     color: gray;
     box-shadow: 0 0 10px var(--color-highlight);
     transform: translateY(-10px); 
@@ -346,11 +307,9 @@ footer {
     justify-content: center;
     align-items: center;
     text-align: center;
-    /* Pastikan background transparan agar naga terlihat */
     background-color: transparent; 
 }
 
-/* --- STYLE KHUSUS HALAMAN BLOG --- */
 
 .blog-hero {
     min-height: 40vh;
@@ -360,7 +319,6 @@ footer {
     justify-content: center;
     align-items: center;
     text-align: center;
-    /* Pastikan background transparan agar naga terlihat */
     background-color: transparent; 
 }
 
@@ -368,27 +326,24 @@ footer {
     font-size: 3rem;
     margin-bottom: 15px;
 
-    /* 1. Definisi Gradasi (Putih ke Biru Muda) */
-    background: -webkit-linear-gradient(#fff, #b3e5fc); /* Browser lama */
-    background: linear-gradient(to bottom, #fff, #b3e5fc); /* Standar */
 
-    /* 2. Potong Background mengikuti Teks */
-    -webkit-background-clip: text; /* Khusus Chrome/Safari */
-    background-clip: text;         /* Standar W3C (Biar gak warning) */
+    background: -webkit-linear-gradient(#fff, #b3e5fc);
+    background: linear-gradient(to bottom, #fff, #b3e5fc); 
 
-    /* 3. Transparansi Teks */
+    -webkit-background-clip: text;
+    background-clip: text;      
+
     -webkit-text-fill-color: transparent;
     color: transparent;
 
-    /* 4. Efek Bayangan */
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
 }
 
 .blog-hero p {
     color: var(--text-grey);
     font-size: 1.2rem;
-    max-width: 600px; /* Biar paragrafnya gak kepanjangan ke samping */
-    margin: 0 auto;   /* Tengahin paragraf */
+    max-width: 600px; 
+    margin: 0 auto;   
 }
 
 .blog-list-section {
@@ -465,46 +420,35 @@ footer {
     border-bottom: 2px solid var(--color-highlight);
 }
 
-/* --- UPDATE STYLE CARD (GLASSMORPHISM DARK) --- */
-/* Kita gabungkan semua elemen kotak biar desainnya konsisten */
-
 .card, 
-.profile-grid > div, /* Menargetkan div di dalam profile */
-.form-container,     /* Form kontak juga kita samain */
-.blog-card {         /* Blog card juga */
+.profile-grid > div, 
+.form-container,     
+.blog-card {         
     
-    /* 1. Background Gelap Transparan (Deep Glass) */
-    /* Ini menggantikan var(--color-accent) yang terlalu terang */
     background: rgba(18, 22, 32, 0.85); 
     
-    /* 2. Blur Background (Kunci agar teks terbaca jelas) */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 
-    /* 3. Border Tipis (Kesan Hi-Tech) */
     border: 1px solid rgba(255, 255, 255, 0.1);
     
-    /* Styling Standar */
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); 
     transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
     
-    /* Pastikan warna teks dasar putih/terang */
     color: #e2e8f0; 
 }
 
-/* --- EFEK HOVER (INTERAKTIF) --- */
 .card:hover, 
 .profile-grid > div:hover,
 .blog-card:hover {
-    transform: translateY(-5px); /* Naik dikit pas ditunjuk */
-    border-color: var(--color-highlight); /* Border jadi biru neon */
-    box-shadow: 0 10px 40px -10px rgba(0, 212, 255, 0.2); /* Ada glow biru */
+    transform: translateY(-5px); 
+    border-color: var(--color-highlight); 
+    box-shadow: 0 10px 40px -10px rgba(0, 212, 255, 0.2);
 }
 
-/* --- PERBAIKAN WARNA TEKS DI DALAM CARD --- */
-/* Judul Card (h3) jadi biru neon biar kontras */
+
 .card h3, 
 .profile-grid h3,
 .blog-card h3 {
@@ -513,40 +457,33 @@ footer {
     font-size: 1.5rem;
 }
 
-/* Paragraf di dalam card jadi abu-abu terang */
 .card p, 
 .profile-grid p {
     color: #cbd5e1; 
     line-height: 1.6;
 }
 
-/* --- FIX TEXT OVERFLOW (MEMOTONG KATA KEPANJANGAN) --- */
+
 .card p, 
 .blog-card p, 
 .profile-grid p,
 .form-container,
 h1, h2, h3, h4 {
-    /* 1. Standar Modern: Memotong kata hanya jika terlalu panjang */
     overflow-wrap: break-word;  
     
-    /* 2. Support Browser Lama */
     word-wrap: break-word;      
 
-    /* 3. Jaga-jaga: Memaksa break jika cara di atas gagal */
     word-break: break-word;     
     
-    /* Opsional: Menambahkan tanda strip (-) otomatis */
     hyphens: auto;              
 }
 
-/* Input Form biar gak putih silau */
 input, textarea {
     width: 100%;
     padding: 12px;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    
-    /* Background input gelap */
+
     background-color: rgba(0, 0, 0, 0.3); 
     color: white;
     font-family: inherit;
@@ -578,56 +515,66 @@ input:focus, textarea:focus {
     transition: all 0.3s ease;
 }
 
-/* --- ANIMASI BURGER MENU (MENJADI SILANG 'X') --- */
-/* Ini kode yang bikin garisnya muter pas menu dibuka */
-
 .toggle .line1 {
     transform: rotate(-45deg) translate(-5px, 6px);
 }
 
 .toggle .line2 {
-    opacity: 0; /* Garis tengah menghilang */
+    opacity: 0; 
 }
 
 .toggle .line3 {
     transform: rotate(45deg) translate(-5px, -6px);
 }
 
-/* Pastikan garis burger menu punya transisi biar mulus */
 .burger-menu div {
-    /* Sudah ada di media query kamu, tapi pastikan ini aktif */
     transition: all 0.3s ease; 
 }
 
-/* --- MOBILE RESPONSIVE FIX --- */
+.blog-thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.testimoni-thumbnail {
+    width: 80px;
+    height: 80px;
+    background-color: #334155;
+    border-radius: 50%;
+    object-fit: cover;  
+    margin-bottom: 15px;
+    display: inline-block;
+    border: 2px solid var(--color-highlight); 
+}
+
 @media screen and (max-width: 768px) {
     
-    /* 1. PERBAIKAN BODY & SCROLL */
     body {
-        overflow-x: hidden; /* Biar gak bisa geser kanan kiri */
+        overflow-x: hidden; 
     }
 
-    /* 2. PERBAIKAN BURGER MENU (BIAR GAK TRANSPARAN) */
     .nav-links {
         position: fixed;
         right: 0px;
         top: 0; 
-        height: 100vh; /* Full tinggi layar */
+        height: 100vh; 
         
-        /* GANTI BACKGROUND BIAR SOLID GELAP */
-        background-color: #0f1219; /* Warna hampir hitam pekat */
+        background-color: #0f1219; 
         border-left: 1px solid rgba(255,255,255,0.1);
         
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center; /* Menu taruh tengah vertikal */
-        width: 70%; /* Lebar menu 70% layar */
+        justify-content: center; 
+        width: 70%; 
         
         transform: translateX(100%); 
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 998;
-        box-shadow: -5px 0 15px rgba(0,0,0,0.8); /* Bayangan biar misah sama konten */
+        box-shadow: -5px 0 15px rgba(0,0,0,0.8); 
     }
     
     .nav-links.nav-active {
@@ -636,19 +583,17 @@ input:focus, textarea:focus {
 
     .nav-links li {
         margin: 20px 0;
-        opacity: 0; /* Nanti diurus JS buat animasi muncul */
+        opacity: 0; 
         animation: navLinkFade 0.5s ease forwards 0.3s;
     }
 
-    /* Burger Menu Icon */
     .burger-menu {
         display: block;
-        z-index: 999; /* Harus di atas menu */
+        z-index: 999; 
     }
 
-    /* 3. PERBAIKAN TOMBOL KEGEDEAN (SOLUSI: DISUSUN KE BAWAH) */
     .cta-buttons {
-        flex-direction: column; /* Tombol jadi atas-bawah, bukan samping-sampingan */
+        flex-direction: column; 
         gap: 15px;
         width: 100%;
         padding: 0 20px; 

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="admin.css">
 </head>
-
 <body>
     <div class="dashboard-container">
         <div class="sidebar">
@@ -20,25 +19,14 @@
         </div>
 
         <div class="content">
+            
             <div id="dashboard" class="section active-section">
                 <h1>Dashboard Overview</h1>
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div>Total Layanan</div>
-                        <div class="stat-number" id="count-services">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div>Total Artikel</div>
-                        <div class="stat-number" id="count-articles">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div>Total Testimoni</div>
-                        <div class="stat-number" id="count-testimoni">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div>Pesan Masuk</div>
-                        <div class="stat-number" id="count-messages">0</div>
-                    </div>
+                    <div class="stat-card"><div>Total Layanan</div><div class="stat-number" id="count-services">0</div></div>
+                    <div class="stat-card"><div>Total Artikel</div><div class="stat-number" id="count-articles">0</div></div>
+                    <div class="stat-card"><div>Total Testimoni</div><div class="stat-number" id="count-testimoni">0</div></div>
+                    <div class="stat-card"><div>Pesan Masuk</div><div class="stat-number" id="count-messages">0</div></div>
                 </div>
             </div>
 
@@ -47,6 +35,7 @@
                 <div class="form-box">
                     <h3 id="form-title-svc">Tambah Layanan</h3>
                     <input type="hidden" id="original-title-svc">
+                    
                     <select id="svc-icon" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
                         <option value="ri-sword-fill">⚔️ Swordmaster (Warrior)</option>
                         <option value="ri-bow-arrow-fill">🏹 Archer (Ranger)</option>
@@ -57,106 +46,70 @@
                         <option value="ri-book-read-fill">📜 Scholar (Support)</option>
                         <option value="ri-robot-fill">🤖 Mecha (Android)</option>
                     </select>
+
                     <input type="text" id="svc-title" placeholder="Judul Layanan">
                     <textarea id="svc-desc" placeholder="Deskripsi Singkat"></textarea>
-
+                    
                     <div id="btn-group-svc">
                         <button class="btn-primary" onclick="addService()">+ Simpan Layanan</button>
                     </div>
-                    <button id="btn-cancel-svc" onclick="resetFormSvc()"
-                        style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal
-                        Edit</button>
+                    <button id="btn-cancel-svc" onclick="resetFormSvc()" style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal Edit</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Layanan</th>
-                            <th>Deskripsi</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbl-services"></tbody>
-                </table>
+                <table><thead><tr><th>Icon</th><th>Layanan</th><th>Deskripsi</th><th>Aksi</th></tr></thead><tbody id="tbl-services"></tbody></table>
             </div>
 
             <div id="blog" class="section">
                 <h1>Kelola Artikel Blog</h1>
                 <div class="form-box">
                     <h3 id="form-title-blog">Tulis Artikel Baru</h3>
-
                     <input type="hidden" id="original-title-blog">
-
+                    
                     <input type="text" id="blog-title" placeholder="Judul Artikel">
                     <input type="text" id="blog-cat" placeholder="Kategori (Misal: Teknologi)">
-                    <textarea id="blog-content" placeholder="Isi artikel..." rows="5"></textarea>
+                    
+                    <label style="display:block; margin-top:10px; font-size:0.9rem;">Upload Gambar Sampul:</label>
+                    <input type="file" id="blog-img" accept="image/*">
+                    <input type="hidden" id="blog-img-url">
 
+                    <textarea id="blog-content" placeholder="Isi artikel..." rows="5" style="margin-top:10px;"></textarea>
+                    
                     <div id="btn-group-blog">
                         <button class="btn-primary" onclick="addArticle()">+ Terbitkan Artikel</button>
                     </div>
-                    <button id="btn-cancel-blog" onclick="resetFormBlog()"
-                        style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal
-                        Edit</button>
+                    <button id="btn-cancel-blog" onclick="resetFormBlog()" style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal Edit</button>
                 </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Judul</th>
-                            <th>Kategori</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbl-blog"></tbody>
-                </table>
+                <table><thead><tr><th>Tanggal</th><th>Judul</th><th>Kategori</th><th>Aksi</th></tr></thead><tbody id="tbl-blog"></tbody></table>
             </div>
 
             <div id="testimonials" class="section">
                 <h1>Kelola Testimoni</h1>
                 <div class="form-box">
                     <h3 id="form-title-testi">Tambah Testimoni</h3>
-                    <input type="hidden" id="original-name-testi"> <input type="text" id="testi-name"
-                        placeholder="Nama Klien">
+                    <input type="hidden" id="original-name-testi">
+                    
+                    <input type="text" id="testi-name" placeholder="Nama Klien">
                     <input type="text" id="testi-role" placeholder="Jabatan">
                     <textarea id="testi-quote" placeholder="Kutipan"></textarea>
-
+                    
+                    <label style="display:block; margin-top:10px; font-size:0.9rem;">Foto Profil Klien:</label>
+                    <input type="file" id="testi-img" accept="image/*">
+                    <input type="hidden" id="testi-img-url">
+                    
                     <div id="btn-group-testi">
                         <button class="btn-primary" onclick="addTesti()">+ Simpan Testimoni</button>
                     </div>
-                    <button id="btn-cancel-testi" onclick="resetFormTesti()"
-                        style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal
-                        Edit</button>
+                    <button id="btn-cancel-testi" onclick="resetFormTesti()" style="display:none; background:#ccc; margin-top:5px; border:none; padding:10px; cursor:pointer;">Batal Edit</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Role</th>
-                            <th>Quote</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbl-testi"></tbody>
-                </table>
+                <table><thead><tr><th>Nama</th><th>Role</th><th>Quote</th><th>Aksi</th></tr></thead><tbody id="tbl-testi"></tbody></table>
             </div>
 
             <div id="messages" class="section">
                 <h1>Pesan Masuk</h1>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Waktu</th>
-                            <th>Pengirim</th>
-                            <th>Pesan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbl-messages"></tbody>
-                </table>
+                <table><thead><tr><th>Waktu</th><th>Pengirim</th><th>Pesan</th><th>Aksi</th></tr></thead><tbody id="tbl-messages"></tbody></table>
             </div>
+
         </div>
     </div>
     <script src="admin.js"></script>
 </body>
-
 </html>

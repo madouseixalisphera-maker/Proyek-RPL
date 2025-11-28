@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://proyek-rpl.onrender.com';
+
 
 document.addEventListener('DOMContentLoaded', () => {
     loadServices();
@@ -53,32 +54,28 @@ async function loadTestimonials() {
 
     try {
         const response = await fetch(`${API_BASE_URL}/testimonials`);
-        if (!response.ok) throw new Error("Gagal fetch data");
         const data = await response.json();
-
         container.innerHTML = '';
 
         data.forEach(testi => {
             const card = document.createElement('div');
-            
             card.className = 'card testimoni-card fade-in';
             
+            
+            const imgContent = testi.image_url 
+                ? `<img src="${testi.image_url}" class="testimoni-thumbnail" alt="${testi.name}">` 
+                : `<div class="testimoni-thumbnail" style="background-color: #334155;"></div>`;
+
             card.innerHTML = `
-                <div class="testimoni-thumbnail"></div>
+                ${imgContent}
                 <p>"${testi.quote}"</p>
                 <h4>- ${testi.name}, <small style="color: #94a3b8;">${testi.role}</small></h4>
             `;
             container.appendChild(card);
         });
     } catch (error) {
-    console.error("Error testimonials:", error);
-    
-    container.innerHTML = `
-        <div class="card" style="grid-column: 1 / -1; text-align: center;">
-            <p style="font-style: italic; color: #94a3b8;">"Testimoni tidak dapat ditampilkan saat ini."</p>
-        </div>
-    `;
-}   
+        console.error("Error testimonials:", error);
+    }
 }
 
 async function loadArticles() {
@@ -101,8 +98,12 @@ async function loadArticles() {
             
             const shortContent = item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content;
             
+            const imgDisplay = item.image_url 
+                ? `<img src="${item.image_url}" class="blog-thumbnail" alt="${item.title}">` 
+                : `<div class="blog-thumbnail" style="background-color: #334155; display:flex; align-items:center; justify-content:center; color:#94a3b8;">No Image</div>`;
+
             card.innerHTML = `
-                <div class="blog-thumbnail"></div> 
+                ${imgDisplay} 
                 <div class="blog-content">
                     <span class="blog-category">${item.category}</span>
                     <h3>${item.title}</h3>
@@ -111,17 +112,18 @@ async function loadArticles() {
                     <a href="#" class="read-more">Baca Selengkapnya &rarr;</a>
                 </div>
             `;
+            
             container.appendChild(card);
         });
     } catch (error) {
-    console.error("Error articles:", error);
-    container.innerHTML = `
-         <div class="blog-card" style="grid-column: 1 / -1; padding: 40px; text-align: center;">
-            <h3>Mode Offline</h3>
-            <p>Gagal terhubung ke server artikel.</p>
-        </div>
-    `;
-}
+        console.error("Error articles:", error);
+        container.innerHTML = `
+             <div class="blog-card" style="grid-column: 1 / -1; padding: 40px; text-align: center;">
+                <h3>Mode Offline</h3>
+                <p>Gagal terhubung ke server artikel.</p>
+            </div>
+        `;
+    }
 }
 
 function setupContactForm() {
